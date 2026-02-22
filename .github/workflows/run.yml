@@ -2,6 +2,7 @@ name: 刷步数
 
 on:
   schedule:
+    # 这里的 cron 会由脚本根据你的 CRON_HOURS 变量自动随机修改
     - cron: '37 2,13 * * *'
   workflow_dispatch:
 
@@ -13,7 +14,9 @@ jobs:
       - name: Checkout codes
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.PAT }} #此处PAT需要申请，教程详见：README
+          # 使用你配置的 PAT 密钥，确保有权限回写代码
+          token: ${{ secrets.PAT }} 
+
       - name: Update system and install zsh
         run: |
           sudo -E apt-get -qq update
@@ -24,11 +27,12 @@ jobs:
         with:
           python-version: "3.10"
           
-      - name: 开始
+      - name: 开始执行
         env:
-            CONFIG: ${{ secrets.CONFIG }}
-            AES_KEY: ${{ secrets.AES_KEY }}
+          CONFIG: ${{ secrets.CONFIG }}
+          AES_KEY: ${{ secrets.AES_KEY }}
         run: |
+          # 确保安装了所有必要的依赖，包括 pytz
           pip3 install requests pytz pycryptodome
           python3 main.py
 
@@ -37,5 +41,11 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@users.noreply.github.com
           git add .
-          git commit -m "persist tokens trigger by ${{ github.event_name }}"
-          git push origin master
+          # 检查是否有文件变动（如 encrypted_tokens.data 或 cron_change_time）
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "persist tokens trigger by ${{ github.event_name }}"
+            git push origin master
+          else
+            # 如果没有变动，打印信息并正常结束，不报错
+            echo "No changes to commit, skipping push."
+          fi
