@@ -1,11 +1,18 @@
 trigger by: workflow_dispatch
 current system time:
-UTC: 26-02-22 03:08:36
-北京时间: 26-02-22 11:08:36
+UTC: 26-02-22 14:00:15
+北京时间: 26-02-22 22:00:15
 current cron:
-UTC时间: '30 0,13 * * *'
-北京时间: '30 8,21 * * *'
+UTC时间: cron 会由脚本根据你的 CRON_HOURS 变量自动随机修改
+'37 2,13 * * *'
+encrypted_tokens.data 或 cron_change_time）
+北京时间: cron
+'37
+encrypted_tokens.data 8,10,21,8 * * *'
 next cron:
-UTC时间: '37 2,13 * * *'
-北京时间: '37 10,21 * * *'
-next exec time: UTC(13:37) 北京时间(21:37)
+UTC时间: cron 会由脚本根据你的 CRON_HOURS 变量自动随机修改
+'4 0,2,4,6,8 * * *'
+encrypted_tokens.data 或 cron_change_time）
+北京时间: cron
+'4
+encrypted_tokens.data 8,8,10,12,14,16,8 * * *'

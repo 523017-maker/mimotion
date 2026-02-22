@@ -3,7 +3,7 @@ name: 刷步数
 on:
   schedule:
     # 这里的 cron 会由脚本根据你的 CRON_HOURS 变量自动随机修改
-    - cron: '37 2,13 * * *'
+    - cron: '4 0,2,4,6,8 * * *'
   workflow_dispatch:
 
 jobs:
