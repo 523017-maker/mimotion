@@ -11,23 +11,36 @@ jobs:
       - name: Checkout codes
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.PAT }} #此处PAT需要申请，教程详见：README
+          token: ${{ secrets.PAT }} #此处PAT需要申请
 
       - name: 初始化Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
-      - name: 开始
+      - name: 开始执行
         env:
-            INSPECT_WECHAT_HOOK_KEY: ${{ secrets.INSPECT_WECHAT_HOOK_KEY }} # 指定微信通知的KEY
-            INSPECT_TELEGRAM_BOT_TOKEN: ${{ secrets.INSPECT_TELEGRAM_BOT_TOKEN }} # 指定telegram推送机器人的token
-            INSPECT_TELEGRAM_CHAT_ID: ${{ secrets.INSPECT_TELEGRAM_CHAT_ID }} # 指定telegram推送chatId
-            INSPECT_AES_KEY: ${{ secrets.INSPECT_AES_KEY }} # 指定打印加密数据的AES KEY
-            CONFIG: ${{ secrets.CONFIG }}
-            AES_KEY: ${{ secrets.AES_KEY }}
-            PAT: ${{ secrets.PAT }}
+          INSPECT_WECHAT_HOOK_KEY: ${{ secrets.INSPECT_WECHAT_HOOK_KEY }}
+          INSPECT_TELEGRAM_BOT_TOKEN: ${{ secrets.INSPECT_TELEGRAM_BOT_TOKEN }}
+          INSPECT_TELEGRAM_CHAT_ID: ${{ secrets.INSPECT_TELEGRAM_CHAT_ID }}
+          INSPECT_AES_KEY: ${{ secrets.INSPECT_AES_KEY }}
+          CONFIG: ${{ secrets.CONFIG }}
+          AES_KEY: ${{ secrets.AES_KEY }}
+          PAT: ${{ secrets.PAT }}
         run: |
-          pip3 install requests pycryptodome
+          # 补全了 pytz 依赖
+          pip3 install requests pycryptodome pytz
           python3 inspect_configs.py
 
+      - name: 自动保存加密文件
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git add .
+          # 检查是否有文件更新，防止因为 nothing to commit 导致报错
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "persist tokens trigger by workflow_dispatch"
+            git push origin master
+          else
+            echo "没有检测到文件变动，无需提交。"
+          fi
